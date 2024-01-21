@@ -75,20 +75,41 @@ def load_csv(path):
     with open(path, newline='') as handler:
         return list(csv.reader(handler))
 
+def path_splitter(path):
+    parent, filename = os.path.split(path)
+    basename, extension = os.path.splitext(filename)
+    return parent, basename, extension
 
-INPUT_PATH = 'contacts.csv'
-OUTPUT_PATH = 'contacts.vcf'
-AUTO_NAME = True
-NAME_PREFIX = 'P'
-FIX_PHONE = True
-PHONE_PREFIX = '+98'
+
+INPUT_PATH = None
+OUTPUT_PATH = None
+AUTO_NAME = None  # add 'name' in header by counting. P1,P2,P3
+NAME_PREFIX = None
+FIX_PHONE = None  # add a prefix to numbers
+PHONE_PREFIX = None
 
 
 if __name__ == '__main__':
-    if not os.path.exists(INPUT_PATH) or not os.path.isfile(INPUT_PATH):
+    INPUT_PATH = input('Enter desired csv file: ')
+    if not INPUT_PATH.endswith('.csv'):
+        INPUT_PATH += '.csv'
+    OUTPUT_PATH = os.path.join(*path_splitter(INPUT_PATH)[:2]) + '.vcf'
+    if not os.path.exists(INPUT_PATH):
         raise FileExistsError(f"File <{INPUT_PATH}> is not a valid file!")
     if os.path.exists(OUTPUT_PATH) and input(f'The output file already exists! <{OUTPUT_PATH}> Are you sure to continue (y/n)? ').lower() != 'y':
         exit()
+
+    if input('Would you like to auto-name? (y/n) ').lower() == 'y':
+        AUTO_NAME = True
+        NAME_PREFIX = input('What prefix you like for names? ')
+    else:
+        AUTO_NAME = False
+
+    if input('Would you like to fix-phones? (y/n) ').lower() == 'y':
+        FIX_PHONE = True
+        PHONE_PREFIX = input('What prefix you like for phones? ')
+    else:
+        FIX_PHONE = False
 
     content = load_csv(INPUT_PATH)
     header = content.pop(0)
@@ -101,7 +122,9 @@ if __name__ == '__main__':
         header.append('name')
         for i in range(len(content)):
             content[i].append(NAME_PREFIX + str(i+1))
-    elif not Contact._check_required_fields(header):
+
+    # validate header after adding 'name' if needed
+    if not Contact._check_required_fields(header):
         raise ValueError(f"Invalid header!")
 
     if FIX_PHONE:
