@@ -22,11 +22,6 @@ class Contact:
     ]
 
     def __init__(self, **info):
-        if ('fname' in info) or ('firstname' in info) or ('first_name' in info):
-            info['name'] = info['fname']
-        if ('lname' in info) or ('lastname' in info) or ('last_name' in info):
-            info['name'] = info['fname']
-
         if not Contact._check_required_fields(info):
             raise ValueError(f'Not enough information. (necessary fields: {", ".join(Contact.REQUIRED_FIELDS)})')
 
