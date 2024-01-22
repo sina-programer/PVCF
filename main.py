@@ -140,7 +140,7 @@ if __name__ == '__main__':
         if not os.path.exists(INPUT_PATH):
             raise FileExistsError(f"File <{INPUT_PATH}> is not a valid file!")
         if os.path.exists(OUTPUT_PATH) and input(f'The output file already exists! <{OUTPUT_PATH}> Are you sure to continue (y/n)? ').lower() != 'y':
-            exit()
+            raise PermissionError(f'Not able to rewrite the content of <{OUTPUT_PATH}>')
 
         if input('Would you like to auto-name? (y/n) ').lower() == 'y':
             AUTO_NAME = True
