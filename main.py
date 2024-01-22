@@ -1,5 +1,6 @@
 from functools import partial
 import operator
+import time
 import csv
 import os
 
@@ -75,6 +76,11 @@ def path_splitter(path):
     basename, extension = os.path.splitext(filename)
     return parent, basename, extension
 
+def print_figlet(delay=.2):
+    for line in FIGLET.splitlines():
+        print(line)
+        time.sleep(delay)
+
 
 INPUT_PATH = None
 OUTPUT_PATH = None
@@ -82,6 +88,14 @@ AUTO_NAME = None  # add 'name' in header by counting. P1,P2,P3
 NAME_PREFIX = None
 FIX_PHONE = None  # add a prefix to numbers
 PHONE_PREFIX = None
+FIGLET = '''\n
+   _____                 ____
+  / ____|               |  __|
+ | (___  _ _ __   __ _  | |__ 
+  \___ \| | '_ \ / _` | |  __|
+  ____) | | | | | (_| |_| |  
+ |_____/|_|_| |_|\__,_(_)_| 
+\n\n'''
 
 
 if __name__ == '__main__':
@@ -137,4 +151,7 @@ if __name__ == '__main__':
 
     print(f'The contacts were exported in <{OUTPUT_PATH}> successfully!')
     print('Added Contacts:', len(contacts))
+
+    print_figlet()
+    time.sleep(1)
     input('Press <enter> to exit...')
