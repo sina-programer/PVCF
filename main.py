@@ -132,28 +132,34 @@ FIGLET = '''\n
 
 
 if __name__ == '__main__':
-    INPUT_PATH = input('Enter desired csv file: ')
-    if not INPUT_PATH.endswith('.csv'):
-        INPUT_PATH += '.csv'
-    OUTPUT_PATH = os.path.join(*path_splitter(INPUT_PATH)[:2]) + '.vcf'
-    if not os.path.exists(INPUT_PATH):
-        raise FileExistsError(f"File <{INPUT_PATH}> is not a valid file!")
-    if os.path.exists(OUTPUT_PATH) and input(f'The output file already exists! <{OUTPUT_PATH}> Are you sure to continue (y/n)? ').lower() != 'y':
-        exit()
+    try:
+        INPUT_PATH = input('Enter desired csv file: ')
+        if not INPUT_PATH.endswith('.csv'):
+            INPUT_PATH += '.csv'
+        OUTPUT_PATH = os.path.join(*path_splitter(INPUT_PATH)[:2]) + '.vcf'
+        if not os.path.exists(INPUT_PATH):
+            raise FileExistsError(f"File <{INPUT_PATH}> is not a valid file!")
+        if os.path.exists(OUTPUT_PATH) and input(f'The output file already exists! <{OUTPUT_PATH}> Are you sure to continue (y/n)? ').lower() != 'y':
+            exit()
 
-    if input('Would you like to auto-name? (y/n) ').lower() == 'y':
-        AUTO_NAME = True
-        NAME_PREFIX = input('What prefix you like for names? ')
-    else:
-        AUTO_NAME = False
+        if input('Would you like to auto-name? (y/n) ').lower() == 'y':
+            AUTO_NAME = True
+            NAME_PREFIX = input('What prefix you like for names? ')
+        else:
+            AUTO_NAME = False
 
-    if input('Would you like to fix-phones? (y/n) ').lower() == 'y':
-        FIX_PHONE = True
-        PHONE_PREFIX = input('What prefix you like for phones? ')
-    else:
-        FIX_PHONE = False
+        if input('Would you like to fix-phones? (y/n) ').lower() == 'y':
+            FIX_PHONE = True
+            PHONE_PREFIX = input('What prefix you like for phones? ')
+        else:
+            FIX_PHONE = False
 
-    main()
-    print_figlet()
-    time.sleep(1)
-    input('Press <enter> to exit...')
+        main()
+
+    except Exception as error:
+        print('\n', type(error).__name__+': ', error, sep='')
+
+    finally:
+        print_figlet()
+        time.sleep(1)
+        input('Press <enter> to exit...')
