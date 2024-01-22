@@ -137,3 +137,4 @@ if __name__ == '__main__':
 
     print(f'The contacts were exported in <{OUTPUT_PATH}> successfully!')
     print('Added Contacts:', len(contacts))
+    input('Press <enter> to exit...')
