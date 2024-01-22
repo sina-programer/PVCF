@@ -81,6 +81,39 @@ def print_figlet(delay=.2):
         print(line)
         time.sleep(delay)
 
+def main():
+    content = load_csv(INPUT_PATH)
+    header = content.pop(0)
+    header = list(map(operator.methodcaller('lower'), header))
+    content = list(map(partial(pad, length=len(header)), content))
+
+    if AUTO_NAME:
+        if 'name' in header:
+            raise RuntimeError("<Auto-Name> is on, but you already have 'name' in header!")
+        header.append('name')
+        for i in range(len(content)):
+            content[i].append(NAME_PREFIX + str(i+1))
+
+    # validate header after adding 'name' if needed
+    if not Contact._check_required_fields(header):
+        raise ValueError(f"Invalid header! (required fields: {', '.join(Contact.REQUIRED_FIELDS)})")
+
+    if FIX_PHONE:
+        idx = header.index('phone')
+        for i in range(len(content)):
+            content[i][idx] = PHONE_PREFIX + content[i][idx]
+
+    contacts = []
+    for row in content:
+        contacts.append(Contact(**dict(zip(header, row))))
+
+    formatted_vcf = '\n'.join(contact.to_vcf() for contact in contacts)
+    with open(OUTPUT_PATH, 'w') as handler:
+        handler.write(formatted_vcf)
+
+    print(f'The contacts were exported in <{OUTPUT_PATH}> successfully!')
+    print('Added Contacts:', len(contacts))
+
 
 INPUT_PATH = None
 OUTPUT_PATH = None
@@ -120,38 +153,7 @@ if __name__ == '__main__':
     else:
         FIX_PHONE = False
 
-    content = load_csv(INPUT_PATH)
-    header = content.pop(0)
-    header = list(map(operator.methodcaller('lower'), header))
-    content = list(map(partial(pad, length=len(header)), content))
-
-    if AUTO_NAME and ('name' in header):
-        raise RuntimeError("<Auto-Name> is on, but you already have 'name' in header!")
-    elif AUTO_NAME:
-        header.append('name')
-        for i in range(len(content)):
-            content[i].append(NAME_PREFIX + str(i+1))
-
-    # validate header after adding 'name' if needed
-    if not Contact._check_required_fields(header):
-        raise ValueError(f"Invalid header!")
-
-    if FIX_PHONE:
-        idx = header.index('phone')
-        for i in range(len(content)):
-            content[i][idx] = PHONE_PREFIX + content[i][idx]
-
-    contacts = []
-    for row in content:
-        contacts.append(Contact(**dict(zip(header, row))))
-
-    formatted_vcf = '\n'.join(contact.to_vcf() for contact in contacts)
-    with open(OUTPUT_PATH, 'w') as handler:
-        handler.write(formatted_vcf)
-
-    print(f'The contacts were exported in <{OUTPUT_PATH}> successfully!')
-    print('Added Contacts:', len(contacts))
-
+    main()
     print_figlet()
     time.sleep(1)
     input('Press <enter> to exit...')
